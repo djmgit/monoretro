@@ -16,6 +16,9 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 uint8_t PONG_GAME_STATE = PONG_GAME_STATE_RUN;
+int scorePlayer = 0;
+int scoreOpp = 0;
+int playerWon = 0;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -69,6 +72,15 @@ void pongSetup()
     pongStartGame();
 }
 
+void displayScore() {
+    pongDisplay.setTextSize(1);
+    pongDisplay.setTextColor(WHITE);
+    pongDisplay.setCursor(20, 5);
+    pongDisplay.printf("%d", scoreOpp);
+    pongDisplay.setCursor(84, 5);
+    pongDisplay.printf("%d", scorePlayer);
+}
+
 void updateOppPosition() {
     if (opp.posY > ball.posY && opp.posY > 0) {
         opp.posY -= opp.speed;
@@ -79,13 +91,50 @@ void updateOppPosition() {
     }
 }
 
+void resetGame() {
+    uint8_t xDir = rand() / (RAND_MAX / 2 + 1);
+    ball.speedX = xDir == 0 ? ball.speedX * -1 : ball.speedX;
+    uint8_t yDir = rand() / (RAND_MAX / 2 + 1);
+    ball.speedY = yDir == 1 ? ball.speedY * -1 : ball.speedY;
+
+    player.posY = SCREEN_HEIGHT / 2;
+    opp.posY = SCREEN_HEIGHT / 2;
+    ball.posX = SCREEN_WIDTH / 2;
+    ball.posY = SCREEN_HEIGHT / 2;
+}
+
+void pongStartGame() {
+    scorePlayer = 0;
+    scoreOpp = 0;
+    playerWon = 0;
+    resetGame();
+}
+
+void checkWinner() {
+    if (scorePlayer == WIN_SCORE) {
+        playerWon = 1;
+        pongStartGame();
+    } else if (scoreOpp == WIN_SCORE) {
+        playerWon = 0;
+        pongStartGame();
+    } else {
+        resetGame();
+    }
+}
+
 void checkBallHit() {
     if ((ball.posY -  ball.radius < 0) || (ball.posY + ball.radius > SCREEN_HEIGHT)) {
         ball.speedY *= -1;
     }
 
-    if (ball.posX - ball.radius < 0 || ball.posX + ball.radius > SCREEN_WIDTH) {
-        pongStartGame();
+    if (ball.posX - ball.radius < 0) {
+        scorePlayer += 1;
+        checkWinner();
+    }
+
+    if (ball.posX + ball.radius > SCREEN_WIDTH) {
+        scoreOpp += 1;
+        checkWinner();
     }
 
     if (ball.posY > player.posY && ball.posY < player.posY + player.height && ball.posX + ball.radius > player.posX) {
@@ -101,18 +150,6 @@ void checkBallHit() {
 void updateBallPositions() {
     ball.posX += ball.speedX;
     ball.posY += ball.speedY;
-}
-
-void pongStartGame() {
-  uint8_t xDir = rand() / (RAND_MAX / 2 + 1);
-  ball.speedX = xDir == 0 ? ball.speedX * -1 : ball.speedX;
-  uint8_t yDir = rand() / (RAND_MAX / 2 + 1);
-  ball.speedY = yDir == 1 ? ball.speedY * -1 : ball.speedY;
-
-  player.posY = SCREEN_HEIGHT / 2;
-  opp.posY = SCREEN_HEIGHT / 2;
-  ball.posX = SCREEN_WIDTH / 2;
-  ball.posY = SCREEN_HEIGHT / 2;
 }
 
 static void pongProcessInput()
@@ -145,6 +182,7 @@ void pongRender() {
     pongDisplay.fillRect(player.posX, player.posY, player.width, player.height, SSD1306_INVERSE);
     pongDisplay.fillRect(opp.posX, opp.posY, opp.width, opp.height, SSD1306_INVERSE);
     pongDisplay.fillCircle(ball.posX, ball.posY, ball.radius, SSD1306_INVERSE);
+    displayScore();
     pongDisplay.display();
 }
 
