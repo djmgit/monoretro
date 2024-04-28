@@ -15,10 +15,11 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-uint8_t PONG_GAME_STATE = PONG_GAME_STATE_RUN;
+uint8_t PONG_GAME_STATE = PONG_GAME_STATE_MENU;
 int scorePlayer = 0;
 int scoreOpp = 0;
 int playerWon = 0;
+
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -68,6 +69,7 @@ void pongSetup()
     pongDisplay.clearDisplay();
     pinMode(down, INPUT_PULLUP);
     pinMode(up, INPUT_PULLUP);
+    pinMode(action, INPUT_PULLUP);
 
     pongStartGame();
 }
@@ -113,10 +115,10 @@ void pongStartGame() {
 void checkWinner() {
     if (scorePlayer == WIN_SCORE) {
         playerWon = 1;
-        pongStartGame();
+        PONG_GAME_STATE = PONG_GAME_STATE_GAME_OVER;
     } else if (scoreOpp == WIN_SCORE) {
         playerWon = 0;
-        pongStartGame();
+        PONG_GAME_STATE = PONG_GAME_STATE_GAME_OVER;
     } else {
         resetGame();
     }
@@ -156,6 +158,7 @@ static void pongProcessInput()
 {
     int upVal = digitalRead(up);
     int downVal = digitalRead(down);
+    int actionVal = digitalRead(action);
     // Serial.printf("%d  %d   %d\n", leftVal, rightVal, fireVal);
     if (PONG_GAME_STATE == PONG_GAME_STATE_RUN) {
         if (upVal == 0 && (player.posY > 0))
@@ -166,7 +169,16 @@ static void pongProcessInput()
         {
             player.posY += player.speed;
         }
-    } 
+    } else if (PONG_GAME_STATE == PONG_GAME_STATE_MENU) {
+        if (actionVal == 0) {
+            PONG_GAME_STATE = PONG_GAME_STATE_RUN;
+        }
+    } else if (PONG_GAME_STATE == PONG_GAME_STATE_GAME_OVER) {
+        if (actionVal == 0) {
+            pongStartGame();
+            PONG_GAME_STATE = PONG_GAME_STATE_RUN;
+        }
+    }
 }
 
 void drawGround() {
@@ -176,21 +188,50 @@ void drawGround() {
     pongDisplay.drawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 10, SSD1306_INVERSE);
 }
 
+void drawSplashScreen() {
+    pongDisplay.setTextSize(2);
+    pongDisplay.setTextColor(WHITE);
+    pongDisplay.setCursor(40, 10);
+    pongDisplay.println("PONG");
+    pongDisplay.setTextSize(1);
+    pongDisplay.setCursor(40, 50);
+    pongDisplay.println("Press fire ...");
+}
+
+void pongGameOver() {
+    pongDisplay.setTextSize(1);
+    pongDisplay.setCursor(30, 30);
+    if (playerWon == 1) {
+        pongDisplay.println("You win!");
+    } else if (playerWon == 0) {
+        pongDisplay.println("You lose!");
+    }
+}
+
 void pongRender() {
     pongDisplay.clearDisplay();
-    drawGround();
-    pongDisplay.fillRect(player.posX, player.posY, player.width, player.height, SSD1306_INVERSE);
-    pongDisplay.fillRect(opp.posX, opp.posY, opp.width, opp.height, SSD1306_INVERSE);
-    pongDisplay.fillCircle(ball.posX, ball.posY, ball.radius, SSD1306_INVERSE);
-    displayScore();
+    if (PONG_GAME_STATE == PONG_GAME_STATE_RUN) {
+        drawGround();
+        pongDisplay.fillRect(player.posX, player.posY, player.width, player.height, SSD1306_INVERSE);
+        pongDisplay.fillRect(opp.posX, opp.posY, opp.width, opp.height, SSD1306_INVERSE);
+        pongDisplay.fillCircle(ball.posX, ball.posY, ball.radius, SSD1306_INVERSE);
+        displayScore();
+    } else if (PONG_GAME_STATE == PONG_GAME_STATE_MENU) {
+        drawSplashScreen();
+    } else if (PONG_GAME_STATE == PONG_GAME_STATE_GAME_OVER) {
+        pongGameOver();
+    }
     pongDisplay.display();
 }
 
 void pongUpdate() {
     pongProcessInput();
-    updateOppPosition();
-    updateBallPositions();
-    checkBallHit();
+
+    if (PONG_GAME_STATE == PONG_GAME_STATE_RUN) {
+        updateOppPosition();
+        updateBallPositions();
+        checkBallHit();
+    }
 }
 
 

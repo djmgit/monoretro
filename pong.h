@@ -34,6 +34,7 @@ typedef struct
 
 const int down = 6;
 const int up = 7;
+const int action = 8;
 
 void pongSetup();
 void pongUpdate();
