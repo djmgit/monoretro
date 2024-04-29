@@ -109,6 +109,8 @@ void pongStartGame() {
     scorePlayer = 0;
     scoreOpp = 0;
     playerWon = 0;
+    ball.speedX = BALL_SPEED;
+    ball.speedY = BALL_SPEED;
     resetGame();
 }
 
@@ -131,6 +133,10 @@ void checkBallHit() {
 
     if (ball.posX - ball.radius < 0) {
         scorePlayer += 1;
+        if (scorePlayer > 2) {
+            ball.speedX = scorePlayer - 1;
+            ball.speedY = scorePlayer - 1;
+        }
         checkWinner();
     }
 
@@ -191,16 +197,17 @@ void drawGround() {
 void drawSplashScreen() {
     pongDisplay.setTextSize(2);
     pongDisplay.setTextColor(WHITE);
-    pongDisplay.setCursor(40, 10);
+    pongDisplay.setCursor(40, 20);
     pongDisplay.println("PONG");
     pongDisplay.setTextSize(1);
-    pongDisplay.setCursor(40, 50);
+    pongDisplay.setCursor(20, 50);
     pongDisplay.println("Press fire ...");
 }
 
 void pongGameOver() {
-    pongDisplay.setTextSize(1);
-    pongDisplay.setCursor(30, 30);
+    pongDisplay.setTextSize(2);
+    pongDisplay.setTextColor(WHITE);
+    pongDisplay.setCursor(10, 20);
     if (playerWon == 1) {
         pongDisplay.println("You win!");
     } else if (playerWon == 0) {
