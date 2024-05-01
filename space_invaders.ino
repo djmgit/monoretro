@@ -1,12 +1,4 @@
-/*********
-  Complete project details at https://randomnerdtutorials.com
-
-  This is an example for our Monochrome OLEDs based on SSD1306 drivers. Pick one up today in the adafruit shop! ------> http://www.adafruit.com/category/63_98
-  This example is for a 128x32 pixel display using I2C to communicate 3 pins are required to interface (two I2C and one reset).
-  Adafruit invests time and resources providing this open source code, please support Adafruit and open-source hardware by purchasing products from Adafruit!
-  Written by Limor Fried/Ladyada for Adafruit Industries, with contributions from the open source community. BSD license, check license.txt for more information All text above, and the splash screen below must be included in any redistribution.
-*********/
-
+#include "common.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
@@ -26,13 +18,6 @@
 #define GAME_STATE_GAME_OVER 2
 #define MAX_LIVES 3
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
-
 #define NUMFLAKES 10 // Number of snowflakes in the animation example
 
 #define LOGO_HEIGHT 16
@@ -40,9 +25,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 uint8_t paddleX = 0;
 uint8_t paddleY = 62;
-const int right = 6;
-const int left = 7;
-const int fire = 8;
 uint8_t fired = 0;
 
 struct bulletNode
@@ -225,7 +207,7 @@ void drawAlien(uint8_t posX, uint8_t posY)
         {
             if (ALIEN_BITMAP[row][col] == 1)
             {
-                display.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
+                monoDisplay.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
             }
         }
     }
@@ -239,7 +221,7 @@ void drawTank(uint8_t posX, uint8_t posY)
         {
             if (TANK_BITMAP[row][col] == 1)
             {
-                display.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
+                monoDisplay.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
             }
         }
     }
@@ -253,38 +235,38 @@ void drawBullet(uint8_t posX, uint8_t posY)
         {
             if (BULLET_BITMAP[row][col] == 1)
             {
-                display.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
+                monoDisplay.drawPixel(posX + col, posY + row, SSD1306_INVERSE);
             }
         }
     }
 }
 
 void displaySplash() {
-    display.setTextSize(2);
-    display.setTextColor(WHITE);
-    display.setCursor(40, 10);
-    display.println("SPACE");
-    display.setCursor(20, 30);
-    display.println("INVADERS");
-    display.setTextSize(1);
-    display.setCursor(40, 50);
-    display.println("Press fire");
+    monoDisplay.setTextSize(2);
+    monoDisplay.setTextColor(WHITE);
+    monoDisplay.setCursor(40, 10);
+    monoDisplay.println("SPACE");
+    monoDisplay.setCursor(20, 30);
+    monoDisplay.println("INVADERS");
+    monoDisplay.setTextSize(1);
+    monoDisplay.setCursor(40, 50);
+    monoDisplay.println("Press fire");
 }
 
 void gameOver() {
-    display.setTextSize(2);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 10);
-    display.println("GAME OVER!");
-    display.setTextSize(1);
-    display.setCursor(30, 30);
-    display.printf("Score: %d", score);
+    monoDisplay.setTextSize(2);
+    monoDisplay.setTextColor(WHITE);
+    monoDisplay.setCursor(0, 10);
+    monoDisplay.println("GAME OVER!");
+    monoDisplay.setTextSize(1);
+    monoDisplay.setCursor(30, 30);
+    monoDisplay.printf("Score: %d", score);
 
 }
 
 void space_invaders_render()
 {
-    display.clearDisplay();
+    monoDisplay.clearDisplay();
     if (GAME_STATE == GAME_STATE_RUN) {
         for (size_t alienIndex = 0; alienIndex < 28; alienIndex++)
         {
@@ -321,7 +303,7 @@ void space_invaders_render()
     } else if (GAME_STATE == GAME_STATE_GAME_OVER) {
         gameOver();
     }
-    display.display();
+    monoDisplay.display();
 }
 
 uint8_t getRandomAliveAlien()
@@ -526,9 +508,9 @@ void checkTankHit()
 
 void processInput()
 {
-    int rightVal = digitalRead(right);
-    int leftVal = digitalRead(left);
-    int fireVal = digitalRead(fire);
+    int rightVal = digitalRead(RIGHT);
+    int leftVal = digitalRead(LEFT);
+    int fireVal = digitalRead(FIRE);
     // Serial.printf("%d  %d   %d\n", leftVal, rightVal, fireVal);
     if (GAME_STATE == GAME_STATE_RUN) {
         if (rightVal == 0 && (tank.posX + tank.width < SCREEN_WIDTH))
@@ -577,15 +559,6 @@ void space_invaders_update()
         cleanTankBullets();
         cleanAlienBullets();
     }
-
-    // tHead = tankBulletList;
-    // int count = 0;
-    // while(tHead != NULL) {
-    // count += 1;
-    // Serial.printf("%d   %d\n", tHead->bullet.posX, tHead->bullet.posY);
-    // tHead = tHead->next;
-    //}
-    // Serial.println(count);
 }
 
 double getDistance(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
@@ -595,25 +568,6 @@ double getDistance(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
 
 void space_invaders_setup()
 {
-    Serial.begin(115200);
-    srand(time(NULL));
     alienBulletTimeRemaining = ALIEN_BULLET_SPAWN_TIME;
-
-    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-    {
-        Serial.println(F("SSD1306 allocation failed"));
-        for (;;)
-            ; // Don't proceed, loop forever
-    }
-
-    // Show initial display buffer contents on the screen --
-    // the library initializes this with an Adafruit splash screen.
-    //display.display();
-    // Clear the buffer
-    display.clearDisplay();
-    pinMode(right, INPUT_PULLUP);
-    pinMode(left, INPUT_PULLUP);
-    pinMode(fire, INPUT_PULLUP);
     starGame();
 }

@@ -32,10 +32,6 @@ typedef struct
 
 } ball_t;
 
-const int down = 10;
-const int up = 11;
-const int action = 8;
-
 void pongSetup();
 void pongUpdate();
 void pongRender();

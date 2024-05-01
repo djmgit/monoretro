@@ -1,3 +1,5 @@
+#include "common.h"
+#include "time.h"
 #include "monoretro.h"
 #include "pong.h"
 #include "space_invaders.h"
@@ -10,13 +12,6 @@
 // down 10
 // up 11
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 monoDisplay(SCREEN_WIDTH, SCREEN_HEIGHT);
-
 const char* options[] = {"PONG", "SPACE INVADERS"};
 uint8_t selectedOption = 0;
 uint8_t MACHINE_STATE = MACHINE_STATE_MENU;
@@ -25,6 +20,7 @@ uint8_t selectorPressed = 0;
 
 void setup() {
     Serial.begin(115200);
+    srand(time(NULL));
     if (!monoDisplay.begin(SSD1306_SWITCHCAPVCC, 0x3C))
     {
         Serial.println(F("SSD1306 allocation failed"));
@@ -40,6 +36,9 @@ void setup() {
     pinMode(SELECTOR, INPUT_PULLUP);
     pinMode(UP, INPUT_PULLUP);
     pinMode(DOWN, INPUT_PULLUP);
+    pinMode(LEFT, INPUT_PULLUP);
+    pinMode(RIGHT, INPUT_PULLUP);
+    pinMode(FIRE, INPUT_PULLUP);
 
     //pongSetup();
 }
