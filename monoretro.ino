@@ -20,6 +20,7 @@ Adafruit_SSD1306 monoDisplay(SCREEN_WIDTH, SCREEN_HEIGHT);
 const char* options[] = {"PONG", "SPACE INVADERS"};
 uint8_t selectedOption = 0;
 uint8_t MACHINE_STATE = MACHINE_STATE_MENU;
+uint8_t selectorPressed = 0;
 
 
 void setup() {
@@ -66,13 +67,18 @@ static void monoProcessInput()
         }   
     }
     if (selector == 0) {
-        if (MACHINE_STATE == MACHINE_STATE_MENU) {
-            MACHINE_STATE = MACHINE_STATE_GAME;
-            gameSetup();
-        } else if (MACHINE_STATE == MACHINE_STATE_GAME) {
-            MACHINE_STATE = MACHINE_STATE_MENU;
-            selectedOption = 0;
+        if (selectorPressed == 0) {
+            if (MACHINE_STATE == MACHINE_STATE_MENU) {
+                MACHINE_STATE = MACHINE_STATE_GAME;
+                gameSetup();
+            } else if (MACHINE_STATE == MACHINE_STATE_GAME) {
+                MACHINE_STATE = MACHINE_STATE_MENU;
+                selectedOption = 0;
+            }
+            selectorPressed = 1;
         }
+    } else {
+        selectorPressed = 0;
     }
 }
 

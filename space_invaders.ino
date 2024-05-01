@@ -609,7 +609,7 @@ void space_invaders_setup()
 
     // Show initial display buffer contents on the screen --
     // the library initializes this with an Adafruit splash screen.
-    display.display();
+    //display.display();
     // Clear the buffer
     display.clearDisplay();
     pinMode(right, INPUT_PULLUP);

@@ -64,7 +64,7 @@ void pongSetup()
 
     // Show initial display buffer contents on the screen --
     // the library initializes this with an Adafruit splash screen.
-    pongDisplay.display();
+    //pongDisplay.display();
     // Clear the buffer
     pongDisplay.clearDisplay();
     pinMode(down, INPUT_PULLUP);
