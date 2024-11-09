@@ -2,6 +2,7 @@
 #include "time.h"
 #include "monoretro.h"
 #include "pong.h"
+#include "break.h"
 #include "space_invaders.h"
 #include <SPI.h>
 #include <Wire.h>
@@ -39,6 +40,7 @@ void setup() {
     pinMode(LEFT, INPUT_PULLUP);
     pinMode(RIGHT, INPUT_PULLUP);
     pinMode(FIRE, INPUT_PULLUP);
+    breakSetup();
 
     //pongSetup();
 }
@@ -124,11 +126,13 @@ void monoRender() {
 
 void loop()
 {
+    breakUpdate();
+    breakRender();
     //pongUpdate();
     //pongRender();
-    monoProcessInput();
-    monoUpdate();
-    monoRender();
+    //monoProcessInput();
+    //monoUpdate();
+    //monoRender();
     delay((int)(1000 / 60));
 }
 
