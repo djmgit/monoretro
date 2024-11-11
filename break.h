@@ -8,11 +8,13 @@
 
 #define BREAK_PADDLE_WIDTH 16
 #define BREAK_PADDLE_HEIGHT 4
-#define BREAK_PADDLE_SPEED 2
+#define BREAK_PADDLE_SPEED 4
 #define BREAK_BALL_SPEED 1
 #define BRICK_WIDTH 8
 #define BRICK_HEIGHT 4
 #define NUM_BRICKS 60
+#define BRICK_HIT_SCORE 2
+#define PADDLE_POSY 60
 
 void breakSetup();
 
