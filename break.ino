@@ -14,7 +14,7 @@
 #include "space_invaders.h"
 #include "break.h"
 
-uint8_t BREAK_GAME_STATE = BREAK_GAME_STATE_RUN;
+uint8_t BREAK_GAME_STATE = BREAK_GAME_STATE_MENU;
 
 brick_t bricks[NUM_BRICKS];
 
@@ -217,24 +217,50 @@ void breakUpdate() {
     }
 }
 
+void breakDrawSpashScreen() {
+    monoDisplay.setTextSize(2);
+    monoDisplay.setTextColor(WHITE);
+    monoDisplay.setCursor(40, 20);
+    monoDisplay.println("BREAK");
+    monoDisplay.setTextSize(1);
+    monoDisplay.setCursor(20, 50);
+    monoDisplay.println("Press fire ...");
+}
+
+void breakGameOverScreen() {
+    monoDisplay.setTextSize(2);
+    monoDisplay.setTextColor(WHITE);
+    monoDisplay.setCursor(0, 10);
+    monoDisplay.println("GAME OVER\n");
+    monoDisplay.setTextSize(1);
+    monoDisplay.setCursor(30, 30);
+    monoDisplay.printf("Score: %d\n", breakScore);
+    monoDisplay.setCursor(20, 50);
+    monoDisplay.printf("Press fire ...");
+}
+
 void breakRender() {
     monoDisplay.clearDisplay();
-    //drawBrick((brick_t){.posX = 20, .posY = 20, .width = 8, .height = 4, .hit = 0});
-    //drawBrick(bricks[0]);
-    for (size_t i = 0; i < NUM_BRICKS; i++) {
-        if (bricks[i].hit == 0) {
-            drawBrick(bricks[i]);
+    if (BREAK_GAME_STATE == BREAK_GAME_STATE_RUN) {
+        for (size_t i = 0; i < NUM_BRICKS; i++) {
+            if (bricks[i].hit == 0) {
+                drawBrick(bricks[i]);
+            }
         }
+        monoDisplay.fillRect(paddle.posX, paddle.posY, paddle.width, paddle.height, SSD1306_INVERSE);
+        monoDisplay.fillCircle(breakBall.posX, breakBall.posY, breakBall.radius, SSD1306_INVERSE);
+    } else if (BREAK_GAME_STATE == BREAK_GAME_STATE_MENU) {
+        breakDrawSpashScreen();
+    } else if (BREAK_GAME_STATE == BREAK_GAME_STATE_GAME_OVER) {
+        breakGameOverScreen();
     }
-    monoDisplay.fillRect(paddle.posX, paddle.posY, paddle.width, paddle.height, SSD1306_INVERSE);
-    monoDisplay.fillCircle(breakBall.posX, breakBall.posY, breakBall.radius, SSD1306_INVERSE);
     monoDisplay.display();
-
 }
 
 void breakSetup()
 {
     printf("test test.....\n");
+    BREAK_GAME_STATE = BREAK_GAME_STATE_MENU;
     breakStartGame();
 }
 
