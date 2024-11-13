@@ -44,6 +44,7 @@ ball_t ball = {
 
 void pongSetup()
 {
+    PONG_GAME_STATE = PONG_GAME_STATE_MENU;
     pongStartGame();
 }
 

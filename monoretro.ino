@@ -13,10 +13,11 @@
 // down 10
 // up 11
 
-const char* options[] = {"PONG", "SPACE INVADERS"};
+const char* options[] = {"PONG", "SPACE INVADERS", "BRICKS"};
 uint8_t selectedOption = 0;
-uint8_t MACHINE_STATE = MACHINE_STATE_MENU;
+uint8_t MACHINE_STATE = MACHINE_STATE_SPLASH;
 uint8_t selectorPressed = 0;
+uint8_t gameSelectorPressed = 0;
 
 
 void setup() {
@@ -40,7 +41,6 @@ void setup() {
     pinMode(LEFT, INPUT_PULLUP);
     pinMode(RIGHT, INPUT_PULLUP);
     pinMode(FIRE, INPUT_PULLUP);
-    breakSetup();
 
     //pongSetup();
 }
@@ -50,6 +50,8 @@ void gameSetup() {
         pongSetup();
     } else if (selectedOption == 1) {
         space_invaders_setup();
+    } else if (selectedOption == 2) {
+        breakSetup();
     }
 }
 
@@ -58,14 +60,26 @@ static void monoProcessInput()
     int upVal = digitalRead(UP);
     int downVal = digitalRead(DOWN);
     int selector = digitalRead(SELECTOR);
+
+    if (MACHINE_STATE == MACHINE_STATE_SPLASH) {
+        if (selector == 0) {
+            MACHINE_STATE = MACHINE_STATE_MENU;
+        }
+        return;
+    }
     
     if (MACHINE_STATE == MACHINE_STATE_MENU) {
-        if (upVal == 0 && selectedOption > 0) { 
-            selectedOption -= 1;    
-        }   
-        if (downVal == 0 && selectedOption < 1) {   
-            selectedOption += 1;    
-        }   
+        if ((upVal == 0) || (downVal == 0)) {
+            if (upVal == 0 && selectedOption > 0 && gameSelectorPressed == 0) { 
+                selectedOption -= 1;    
+            }   
+            if (downVal == 0 && selectedOption < 2 && gameSelectorPressed == 0) {   
+                selectedOption += 1;    
+            }
+            gameSelectorPressed = 1;
+        } else {
+            gameSelectorPressed = 0;
+        }
     }
     if (selector == 0) {
         if (selectorPressed == 0) {
@@ -90,7 +104,7 @@ void renderMenu() {
     monoDisplay.clearDisplay();
     monoDisplay.setTextSize(1);
     monoDisplay.setTextColor(WHITE);
-    for (size_t i = 0; i < 2; i++) {
+    for (size_t i = 0; i < 3; i++) {
         monoDisplay.setCursor(xOffset, yOffset);
         if (i == selectedOption) {
             monoDisplay.printf("> %s", options[i]);
@@ -102,12 +116,25 @@ void renderMenu() {
     monoDisplay.display(); 
 }
 
+void renderSplash() {
+    uint8_t xOffset = 24;
+    uint8_t yOffset = 10;
+    uint8_t yOffsetDiff = 20;
+    monoDisplay.clearDisplay();
+    monoDisplay.setTextSize(1);
+    monoDisplay.setTextColor(WHITE);
+    monoDisplay.printf("Monoretro");
+    monoDisplay.display(); 
+}
+
 void monoUpdate() {
     if (MACHINE_STATE == MACHINE_STATE_GAME) {
         if (selectedOption == 0) {
             pongUpdate();
         } else if (selectedOption == 1) {
             space_invaders_update();
+        } else if (selectedOption == 2) {
+            breakUpdate();
         }
     }
 }
@@ -120,19 +147,23 @@ void monoRender() {
             pongRender();
         } else if (selectedOption == 1) {
             space_invaders_render();
+        } else if (selectedOption == 2) {
+            breakRender();
         }
+    } else if (MACHINE_STATE == MACHINE_STATE_SPLASH) {
+        renderSplash();
     }
 }
 
 void loop()
 {
-    breakUpdate();
-    breakRender();
+    //breakUpdate();
+    //breakRender();
     //pongUpdate();
     //pongRender();
-    //monoProcessInput();
-    //monoUpdate();
-    //monoRender();
+    monoProcessInput();
+    monoUpdate();
+    monoRender();
     delay((int)(1000 / 60));
 }
 

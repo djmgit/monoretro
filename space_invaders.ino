@@ -569,5 +569,6 @@ double getDistance(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
 void space_invaders_setup()
 {
     alienBulletTimeRemaining = ALIEN_BULLET_SPAWN_TIME;
+    GAME_STATE = GAME_STATE_MENU;
     starGame();
 }

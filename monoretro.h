@@ -3,5 +3,6 @@
 
 #define MACHINE_STATE_MENU 0
 #define MACHINE_STATE_GAME 1
+#define MACHINE_STATE_SPLASH 2
 
 #endif

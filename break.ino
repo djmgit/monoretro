@@ -221,7 +221,7 @@ void breakDrawSpashScreen() {
     monoDisplay.setTextSize(2);
     monoDisplay.setTextColor(WHITE);
     monoDisplay.setCursor(40, 20);
-    monoDisplay.println("BREAK");
+    monoDisplay.println("BRICKS");
     monoDisplay.setTextSize(1);
     monoDisplay.setCursor(20, 50);
     monoDisplay.println("Press fire ...");
