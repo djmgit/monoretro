@@ -62,8 +62,11 @@ static void monoProcessInput()
     int selector = digitalRead(SELECTOR);
 
     if (MACHINE_STATE == MACHINE_STATE_SPLASH) {
-        if (selector == 0) {
+        if (selector == 0 & selectorPressed == 0) {
             MACHINE_STATE = MACHINE_STATE_MENU;
+            selectorPressed = 1;
+        } else {
+            selectorPressed = 0;
         }
         return;
     }
@@ -71,7 +74,7 @@ static void monoProcessInput()
     if (MACHINE_STATE == MACHINE_STATE_MENU) {
         if ((upVal == 0) || (downVal == 0)) {
             if (upVal == 0 && selectedOption > 0 && gameSelectorPressed == 0) { 
-                selectedOption -= 1;    
+                selectedOption -= 1;
             }   
             if (downVal == 0 && selectedOption < 2 && gameSelectorPressed == 0) {   
                 selectedOption += 1;    
@@ -117,13 +120,14 @@ void renderMenu() {
 }
 
 void renderSplash() {
-    uint8_t xOffset = 24;
-    uint8_t yOffset = 10;
-    uint8_t yOffsetDiff = 20;
+    monoDisplay.setCursor(10, 25);
     monoDisplay.clearDisplay();
-    monoDisplay.setTextSize(1);
+    monoDisplay.setTextSize(2);
     monoDisplay.setTextColor(WHITE);
-    monoDisplay.printf("Monoretro");
+    monoDisplay.printf("MONORETRO");
+    monoDisplay.setCursor(10, 50);
+    monoDisplay.setTextSize(1);
+    monoDisplay.printf("Let the fun begin!");
     monoDisplay.display(); 
 }
 
