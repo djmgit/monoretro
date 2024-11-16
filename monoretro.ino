@@ -161,10 +161,7 @@ void monoRender() {
 
 void loop()
 {
-    //breakUpdate();
-    //breakRender();
-    //pongUpdate();
-    //pongRender();
+   
     monoProcessInput();
     monoUpdate();
     monoRender();
