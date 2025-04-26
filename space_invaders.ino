@@ -1,4 +1,5 @@
 #include "common.h"
+#include "monoretro.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
@@ -508,8 +509,8 @@ void checkTankHit()
 
 void processInput()
 {
-    int rightVal = digitalRead(RIGHT);
-    int leftVal = digitalRead(LEFT);
+    int rightVal = isRightPressed();
+    int leftVal = isLeftPressed();
     int fireVal = digitalRead(FIRE);
     // Serial.printf("%d  %d   %d\n", leftVal, rightVal, fireVal);
     if (GAME_STATE == GAME_STATE_RUN) {

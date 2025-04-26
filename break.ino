@@ -1,4 +1,5 @@
 #include "common.h"
+#include "monoretro.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
@@ -65,8 +66,8 @@ void generateBricks() {
 
 void breakProcessInput()
 {
-    int leftVal = digitalRead(LEFT);
-    int rightVal = digitalRead(RIGHT);
+    int leftVal = isLeftPressed();
+    int rightVal = isRightPressed();
     int actionVal = digitalRead(FIRE);
 
     if (BREAK_GAME_STATE == BREAK_GAME_STATE_RUN) {

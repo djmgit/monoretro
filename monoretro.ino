@@ -19,6 +19,49 @@ uint8_t MACHINE_STATE = MACHINE_STATE_SPLASH;
 uint8_t selectorPressed = 0;
 uint8_t gameSelectorPressed = 0;
 
+int isUpPressed() {
+    if (USE_JOYSTICK == 0) {
+        return digitalRead(UP);
+    }
+    int yAxisVal = analogRead(VERTICAL);
+    if (yAxisVal < 200) {
+        return 0;
+    }
+    return 1;
+}
+
+int isDownPressed() {
+    if (USE_JOYSTICK == 0) {
+        return digitalRead(DOWN);
+    }
+    int yAxisVal = analogRead(VERTICAL);
+    if (yAxisVal > 600) {
+        return 0;
+    }
+    return 1;
+}
+
+int isLeftPressed() {
+    if (USE_JOYSTICK == 0) {
+        return digitalRead(LEFT);
+    }
+    int xAxisVal = analogRead(HORIZONTAL);
+    if (xAxisVal < 200) {
+        return 0;
+    }
+    return 1;
+}
+
+int isRightPressed() {
+    if (USE_JOYSTICK == 0) {
+        return digitalRead(RIGHT);
+    }
+    int xAxisVal = analogRead(HORIZONTAL);
+    if (xAxisVal > 600) {
+        return 0;
+    }
+    return 1;
+}
 
 void setup() {
     Serial.begin(115200);
@@ -57,8 +100,8 @@ void gameSetup() {
 
 static void monoProcessInput()
 {
-    int upVal = digitalRead(UP);
-    int downVal = digitalRead(DOWN);
+    int upVal = isUpPressed();
+    int downVal = isDownPressed();
     int selector = digitalRead(SELECTOR);
 
     if (MACHINE_STATE == MACHINE_STATE_SPLASH) {

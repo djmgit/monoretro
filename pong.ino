@@ -1,4 +1,5 @@
 #include "common.h"
+#include "monoretro.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
@@ -136,8 +137,8 @@ void updateBallPositions() {
 
 static void pongProcessInput()
 {
-    int upVal = digitalRead(UP);
-    int downVal = digitalRead(DOWN);
+    int upVal = isUpPressed();
+    int downVal = isDownPressed();
     int actionVal = digitalRead(FIRE);
     // Serial.printf("%d  %d   %d\n", leftVal, rightVal, fireVal);
     if (PONG_GAME_STATE == PONG_GAME_STATE_RUN) {

@@ -15,6 +15,9 @@
 #define SELECTOR 9
 #define DOWN 10
 #define UP 11
+#define USE_JOYSTICK 1
+#define HORIZONTAL 26
+#define VERTICAL 27
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
