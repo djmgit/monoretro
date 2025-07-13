@@ -12,7 +12,7 @@
 #define RIGHT 6
 #define LEFT 7
 #define FIRE 8
-#define SELECTOR 9
+#define SELECTOR 14 // original 9, but using 14 on breadboard
 #define DOWN 10
 #define UP 11
 #define USE_JOYSTICK 1

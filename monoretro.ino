@@ -30,7 +30,7 @@ int isUpPressed() {
     return 1;
 }
 
-int isDownPressed() {
+int isDownPressed() {   
     if (USE_JOYSTICK == 0) {
         return digitalRead(DOWN);
     }
@@ -46,7 +46,7 @@ int isLeftPressed() {
         return digitalRead(LEFT);
     }
     int xAxisVal = analogRead(HORIZONTAL);
-    if (xAxisVal < 200) {
+    if (xAxisVal < 150) {
         return 0;
     }
     return 1;
@@ -84,6 +84,8 @@ void setup() {
     pinMode(LEFT, INPUT_PULLUP);
     pinMode(RIGHT, INPUT_PULLUP);
     pinMode(FIRE, INPUT_PULLUP);
+    pinMode(7, OUTPUT);
+    digitalWrite(7, HIGH);
 
     //pongSetup();
 }
@@ -204,7 +206,6 @@ void monoRender() {
 
 void loop()
 {
-   
     monoProcessInput();
     monoUpdate();
     monoRender();
